@@ -2,8 +2,8 @@
 
 ## Install the firmware
 
-Download firmware from: http://micropython.org/download/esp8266/
-Then follow: http://docs.micropython.org/en/latest/esp8266/tutorial/intro.html#deploying-the-firmware
+- Download firmware from: http://micropython.org/download/esp8266/
+- Then follow: http://docs.micropython.org/en/latest/esp8266/tutorial/intro.html#deploying-the-firmware
 
 Lower baudrate of 115200 can help to prevent flashing problems.
 
@@ -38,6 +38,8 @@ Toggle like this:
 ### Pinout 
 
 Slanted front facing you:
+
+```
 ____________
 |           |
 |___________|
@@ -45,11 +47,13 @@ ____________
  |    |    |
 
  5V  GND  OUT
-
+```
 
 ### Connect to Wemos D1 Mini Pins
 
+```
  5V   G    D2 (aka Pin No. 4)
+```
 
 ### Read Sensor
 
