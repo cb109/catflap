@@ -10,7 +10,25 @@ class BaseModel(models.Model):
 
 
 class CatFlap(BaseModel):
+    """A device with sensors to detect movement events."""
+
     name = models.CharField(max_length=64)
 
     def __str__(self):
         return self.name
+
+
+class Event(BaseModel):
+    """A movement event on a Catflap device."""
+
+    catflap = models.ForeignKey("catflap.CatFlap", on_delete=models.CASCADE)
+
+    class Kinds(models.TextChoices):
+        CLOSED = "CL"
+        OPENED_INWARD = "OI"
+        OPENED_OUTWARD = "OO"
+
+    kind = models.CharField(
+        max_length=2,
+        choices=Kinds.choices,
+    )
