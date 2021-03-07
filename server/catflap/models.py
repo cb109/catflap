@@ -32,3 +32,7 @@ class Event(BaseModel):
         max_length=2,
         choices=Kinds.choices,
     )
+
+    def __str__(self):
+        return f"{self.created_at} {self.catflap.name} {self.kind}"
+

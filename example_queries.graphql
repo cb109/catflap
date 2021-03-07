@@ -1,0 +1,24 @@
+query {
+  allCatflaps {
+    id
+    name
+  }
+  allEvents {
+    createdAt
+    kind
+    catflap {
+      id
+      name
+    }
+  }
+}
+
+
+mutation {
+  createEvent(catflapId: 1, kind: "OPENED") {
+    event {
+      id
+      createdAt
+    }
+  }
+}
