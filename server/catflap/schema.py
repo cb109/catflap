@@ -1,6 +1,5 @@
 import graphene
 from graphene_django import DjangoObjectType
-
 from server.catflap.models import CatFlap, Event
 
 
@@ -14,12 +13,15 @@ class CatFlapType(DjangoObjectType):
 
 
 class EventType(DjangoObjectType):
+    kind_label = graphene.String(source="kind_label")
+
     class Meta:
         model = Event
         fields = (
             "catflap",
             "created_at",
             "id",
+            "kind_label",
             "kind",
         )
 
@@ -55,9 +57,7 @@ class Query(graphene.ObjectType):
         return Event.objects.all()
 
     def resolve_events_by_catflap_name(root, info, name):
-        return Event.objects.filter(
-            catflap__name=name
-        ).order_by("-created_at")
+        return Event.objects.filter(catflap__name=name).order_by("-created_at")
 
 
 class Mutation(graphene.ObjectType):

@@ -15,10 +15,11 @@ query {
 
 
 mutation {
-  createEvent(catflapId: 1, kind: "OPENED") {
+  createEvent(catflapId: 1, kind: "OI") {
     event {
       id
       createdAt
+      kindLabel
     }
   }
 }

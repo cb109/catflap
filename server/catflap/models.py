@@ -25,6 +25,7 @@ class Event(BaseModel):
 
     class Kinds(models.TextChoices):
         CLOSED = "CL"
+        OPENED = "O"
         OPENED_INWARD = "OI"
         OPENED_OUTWARD = "OO"
 
@@ -33,6 +34,9 @@ class Event(BaseModel):
         choices=Kinds.choices,
     )
 
+    @property
+    def kind_label(self):
+        return self.Kinds(self.kind).name.replace("_", " ").capitalize()
+
     def __str__(self):
         return f"{self.created_at} {self.catflap.name} {self.kind}"
-
