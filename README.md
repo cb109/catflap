@@ -1,5 +1,9 @@
 # catflap
 
+## Useful collections of tips regarding MicroPython on a Wemos D1 Mini
+
+http://www.mark-fink.de/2020-03-24-micropython-on-esp8266/
+
 ## Install the firmware
 
 - Download firmware from: http://micropython.org/download/esp8266/
@@ -13,7 +17,7 @@ Lower baudrate of 115200 can help to prevent flashing problems.
     $ sudo esptool.py --port /dev/ttyUSB0 erase_flash
     $ sudo esptool.py --port /dev/ttyUSB0 --baud 115200 write_flash --flash_size=detect 0 ~/Downloads/esp8266-20200911-v1.13.bin
 
-## REPL 
+## REPL
 
 See: http://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
 
@@ -32,10 +36,15 @@ Toggle like this:
     >>> led.on()
     >>> led.off()
 
+## Client Development
+
+- ′$ pip install adafruit-ampy′
+- List files on board: ′$ ampy --port /dev/ttyUSB0 ls′
+- Copy file to board: ′$ ampy --port /dev/ttyUSB0 put main.py′
 
 ## Read A3144 Hall Effect Sensor Value
 
-### Pinout 
+### Pinout
 
 Slanted front facing you:
 
@@ -60,8 +69,8 @@ ____________
     >>> from machine import Pin
     >>> sensor = Pin(4, Pin.IN, Pin.PULL_UP)
     >>> while True:
-    >>>     if pin.value() == 0:
+    >>>     if sensor.value() == 0:
     >>>         print("magnet detected!")
     >>>     else:
     >>>         print("")
-    >>> 
+    >>>
