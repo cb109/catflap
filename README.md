@@ -38,9 +38,9 @@ Toggle like this:
 
 ## Client Development
 
-- ′$ pip install adafruit-ampy′
-- List files on board: ′$ ampy --port /dev/ttyUSB0 ls′
-- Copy file to board: ′$ ampy --port /dev/ttyUSB0 put main.py′
+- `$ pip install adafruit-ampy`
+- List files on board: `$ ampy --port /dev/ttyUSB0 ls`
+- Copy file to board: `$ ampy --port /dev/ttyUSB0 put main.py`
 
 ## Read A3144 Hall Effect Sensor Value
 
