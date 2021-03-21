@@ -4,15 +4,17 @@ import time
 import network
 from machine import Pin, Signal
 
-INTERNAL_LED_PIN_INDEX = 2
-SENSOR_PIN_INDEX = 4
+default_config = {
+    "SENSOR_PIN_INDEX": 4,
+    "INTERNAL_LED_PIN_INDEX": 2,
+    "WIFI_SSID": None,
+    "WIFI_PSK": None,
+}
 
 
 def get_config(filepath=".env"):
-    config = {
-        "WIFI_SSID": None,
-        "WIFI_PSK": None,
-    }
+    # Defaults
+    config = dict(default_config)
     try:
         handle = open(filepath)
     except OSError:
@@ -33,15 +35,15 @@ def get_config(filepath=".env"):
     return config
 
 
-def get_sensor(pin_index=SENSOR_PIN_INDEX):
+def get_sensor(pin_index):
     return Pin(pin_index, Pin.IN, Pin.PULL_UP)
 
 
-def get_internal_led():
-    return Signal(INTERNAL_LED_PIN_INDEX, Pin.OUT, invert=True)
+def get_internal_led(pin_index):
+    return Signal(pin_index, Pin.OUT, invert=True)
 
 
-def connect_to_wifi(config):
+def connect_to_wifi(config, timeout_seconds=10):
     # See:
     # - https://docs.micropython.org/en/latest/esp8266/tutorial/network_basics.html
     # - https://docs.micropython.org/en/latest/esp8266/quickref.html#networking
@@ -59,14 +61,22 @@ def connect_to_wifi(config):
 
         print("[INFO] Connecting to wifi " + ssid + " ...")
         wifi.connect(ssid, psk)
-        while not wifi.isconnected():
-            pass
 
+        interval = 0.5
+        time_left = timeout_seconds
+        while not wifi.isconnected():
+            if time_left <= 0:
+                blink_led(times=5)
+                return None
+            time.sleep(interval)
+            time_left -= interval
+
+    blink_led()
     print("[INFO] Wifi is connected: " + str(wifi.isconnected()))
     return wifi
 
 
-def blink_led(seconds=0.25, times=1):
+def blink_led(seconds=0.15, times=1):
     for _ in range(times):
         led.on()
         time.sleep(seconds / 2.0)
@@ -74,18 +84,14 @@ def blink_led(seconds=0.25, times=1):
         time.sleep(seconds / 2.0)
 
 
+# State
 config = get_config()
-wifi = connect_to_wifi(config)
-
-led = get_internal_led()
-sensor = get_sensor()
-
+led = get_internal_led(config["INTERNAL_LED_PIN_INDEX"])
+sensor = get_sensor(config["SENSOR_PIN_INDEX"])
 previous_sensor_state = sensor.value()
 
-# if wifi.isconnected():
-#     blink_led(seconds=1.0, times=2)
-# else:
-#     blink_led(seconds=0.1, times=5)
+# Connect to Wifi last so we can blink if succeeding
+wifi = connect_to_wifi(config)
 
 while True:
     sensor_state = sensor.value()
