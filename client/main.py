@@ -14,17 +14,25 @@ def get_internal_led():
     return Signal(INTERNAL_LED_PIN_INDEX, Pin.OUT, invert=True)
 
 
-# State
-counter = 0
+def blink_led(seconds=0.25):
+    led.on()
+    time.sleep(seconds)
+    led.off()
+
+
 led = get_internal_led()
 sensor = get_sensor()
 
+previous_sensor_state = sensor.value()
+
 
 while True:
-    if sensor.value() == 0:
-        print(str(counter) + " magnet detected!")
-        led.on()
-    else:
-        print("")
-        led.off()
-    counter += 1
+    sensor_state = sensor.value()
+
+    has_changed = sensor_state != previous_sensor_state
+    if not has_changed:
+        continue
+
+    blink_led()
+    previous_sensor_state = sensor_state
+
