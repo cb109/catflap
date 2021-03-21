@@ -7,6 +7,7 @@ from machine import Pin, Signal
 default_config = {
     "SENSOR_PIN_INDEX": 4,
     "INTERNAL_LED_PIN_INDEX": 2,
+    "CATFLAP_CLOSED_SENSOR_STATE": 1,
     "WIFI_SSID": None,
     "WIFI_PSK": None,
 }
@@ -36,11 +37,11 @@ def get_config(filepath=".env"):
 
 
 def get_sensor(pin_index):
-    return Pin(pin_index, Pin.IN, Pin.PULL_UP)
+    return Pin(int(pin_index), Pin.IN, Pin.PULL_UP)
 
 
 def get_internal_led(pin_index):
-    return Signal(pin_index, Pin.OUT, invert=True)
+    return Signal(int(pin_index), Pin.OUT, invert=True)
 
 
 def connect_to_wifi(config, timeout_seconds=10):
@@ -76,7 +77,7 @@ def connect_to_wifi(config, timeout_seconds=10):
     return wifi
 
 
-def blink_led(seconds=0.15, times=1):
+def blink_led(seconds=0.1, times=1):
     for _ in range(times):
         led.on()
         time.sleep(seconds / 2.0)
@@ -103,3 +104,8 @@ while True:
     blink_led()
     previous_sensor_state = sensor_state
 
+    is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
+    if is_closed:
+        print("[INFO] Catflap has been closed |")
+    else:
+        print("[INFO] Catflap has been opened \\")
