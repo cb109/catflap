@@ -47,8 +47,10 @@ Toggle like this:
 - Open a shell to the board
 - Within the REPL type:
 
+    ```python
     >>> import upip
     >>> upip.install("micropython-uasyncio")
+    ```
 
 ## Read A3144 Hall Effect Sensor Value
 
