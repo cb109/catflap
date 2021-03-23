@@ -114,3 +114,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+PUSHOVER_USER_KEY = None
+PUSHOVER_API_TOKEN = None
