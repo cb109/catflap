@@ -42,6 +42,14 @@ Toggle like this:
 - List files on board: `$ ampy --port /dev/ttyUSB0 ls`
 - Copy file to board: `$ ampy --port /dev/ttyUSB0 put main.py`
 
+### Install MicroPython libraries
+
+- Open a shell to the board
+- Within the REPL type:
+
+    >>> import upip
+    >>> upip.install("micropython-uasyncio")
+
 ## Read A3144 Hall Effect Sensor Value
 
 ### Pinout
