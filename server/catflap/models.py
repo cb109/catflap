@@ -26,13 +26,11 @@ class Event(BaseModel):
     class Kinds(models.TextChoices):
         CLOSED = "CL"
         OPENED = "O"
+        OPENED_CLOSED = "OC"
         OPENED_INWARD = "OI"
         OPENED_OUTWARD = "OO"
 
-    kind = models.CharField(
-        max_length=2,
-        choices=Kinds.choices,
-    )
+    kind = models.CharField(max_length=2, choices=Kinds.choices,)
 
     @property
     def kind_label(self):
