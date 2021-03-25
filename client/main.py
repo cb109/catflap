@@ -147,4 +147,4 @@ def loop():
         previous_sensor_state = sensor_state
 
 
-# loop()
+loop()
