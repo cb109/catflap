@@ -43,6 +43,8 @@ def get_config(filepath=".env"):
             print("[WARN] Unreadable config line: " + line)
             continue
         key, value = key.strip(), value.strip()
+        if value in ("0", "1"):
+            value = int(value)
         config[key] = value
 
     return config
@@ -125,19 +127,24 @@ previous_sensor_state = sensor.value()
 # Connect to Wifi last, so we can blink when succeeding.
 wifi = connect_to_wifi(config)
 
-while True:
-    sensor_state = sensor.value()
 
-    has_changed = sensor_state != previous_sensor_state
-    if not has_changed:
-        continue
+def loop():
+    global previous_sensor_state
+    while True:
+        sensor_state = sensor.value()
+        has_changed = sensor_state != previous_sensor_state
+        if not has_changed:
+            continue
 
-    is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
-    if is_closed:
-        notify_server_about_catflap_opened_closed(config)
-        print("[INFO] Catflap has been closed |")
-    else:
-        print("[INFO] Catflap has been opened \\")
+        is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
+        if is_closed:
+            notify_server_about_catflap_opened_closed(config)
+            print("[INFO] Catflap has been closed |")
+        else:
+            print("[INFO] Catflap has been opened \\")
 
-    blink_led()
-    previous_sensor_state = sensor_state
+        blink_led()
+        previous_sensor_state = sensor_state
+
+
+# loop()
