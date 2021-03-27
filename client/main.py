@@ -107,6 +107,7 @@ def notify_server_about_catflap_opened_closed(config):
     )
     print("[INFO] Notifying server via API...")
     response = requests.post(config["API_URL"], json={"query": query})
+    response.close()
     return response
 
 
