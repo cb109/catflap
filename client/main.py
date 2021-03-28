@@ -151,7 +151,6 @@ def loop_once():
         blink_led()
         previous_sensor_state = sensor_state
 
-    print("sleeping...")
     machine.lightsleep(SLEEP_MS)
 
 
