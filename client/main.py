@@ -1,6 +1,8 @@
 import os
 import time
 
+import esp
+import machine
 import network
 from machine import Pin, Signal
 
@@ -10,6 +12,9 @@ except ImportError:
     import requests
 
 
+esp.sleep_type(esp.SLEEP_LIGHT)
+
+SLEEP_MS = 333
 EVENT_OPENED_CLOSED = "OC"
 
 default_config = {
@@ -129,14 +134,13 @@ previous_sensor_state = sensor.value()
 wifi = connect_to_wifi(config)
 
 
-def loop():
+def loop_once():
     global previous_sensor_state
-    while True:
-        sensor_state = sensor.value()
-        has_changed = sensor_state != previous_sensor_state
-        if not has_changed:
-            continue
-
+    sensor_state = sensor.value()
+    has_changed = sensor_state != previous_sensor_state
+    if not has_changed:
+        pass
+    else:
         is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
         if is_closed:
             notify_server_about_catflap_opened_closed(config)
@@ -147,5 +151,13 @@ def loop():
         blink_led()
         previous_sensor_state = sensor_state
 
+    print("sleeping...")
+    machine.lightsleep(SLEEP_MS)
 
-loop()
+
+def loop_forever():
+    while True:
+        loop_once()
+
+
+# loop_forever()
