@@ -26,6 +26,16 @@ It's a bit involved (see https://www.reddit.com/r/esp8266/comments/7398fn/resett
 - Connect GPIO 2 (aka D4) to 3.3V
 - Then flash the new firmware, or try a new programm
 
+### Deep Sleep
+
+    def deepsleep(ms):
+        rtc = machine.RTC()
+        rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
+        rtc.alarm(rtc.ALARM0, ms)
+        machine.deepsleep()
+
+    deepsleep(5000)
+    woken_from_deepsleep = machine.reset_cause() == machine.DEEPSLEEP_RESET
 
 ## REPL
 
