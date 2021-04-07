@@ -17,6 +17,16 @@ Lower baudrate of 115200 can help to prevent flashing problems.
     $ sudo esptool.py --port /dev/ttyUSB0 erase_flash
     $ sudo esptool.py --port /dev/ttyUSB0 --baud 115200 write_flash --flash_size=detect 0 ~/Downloads/esp8266-20200911-v1.13.bin
 
+### Hard Reset of a Wemos D1 Mini
+
+It's a bit involved (see https://www.reddit.com/r/esp8266/comments/7398fn/resetting_wemos_d1_mini/):
+
+- Connect GPIO 0 (aka D3) to GND
+- Connect GPIO 15 (aka D8) to GND
+- Connect GPIO 2 (aka D4) to 3.3V
+- Then flash the new firmware, or try a new programm
+
+
 ## REPL
 
 See: http://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
