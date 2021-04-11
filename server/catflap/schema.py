@@ -1,4 +1,5 @@
 import graphene
+import pendulum
 from django.conf import settings
 from django.urls import reverse
 from graphene_django import DjangoObjectType
@@ -29,7 +30,7 @@ class EventType(DjangoObjectType):
         )
 
 
-def notify_user(request, catflap, event):
+def notify_user(catflap, event):
     located_at = "inside" if catflap.cat_inside else "outside"
     current_url = settings.NOTIFICATION_BASE_URL + reverse(
         f"set-{located_at}", args=(catflap.id,)
@@ -40,7 +41,15 @@ def notify_user(request, catflap, event):
         f"set-{inverse_located_at}", args=(catflap.id,)
     )
 
-    title = f"{catflap.cat_name} is {located_at} now"
+    duration_str = ""
+    previous_event = event.get_previous_by_created_at()
+    if previous_event:
+        duration = pendulum.instance(event.created_at) - pendulum.instance(
+            previous_event.created_at
+        )
+        duration_str = f" (after {duration.in_words()})"
+
+    title = f"{catflap.cat_name} is {located_at} now{duration_str}"
     message = (
         f"{catflap.name} {event.kind_label}: {catflap.cat_name} is likely "
         f"<b>{located_at}</b> now.\n\n"
@@ -68,8 +77,7 @@ class EventMutation(graphene.Mutation):
         catflap.cat_inside = not catflap.cat_inside
         catflap.save()
 
-        request = info.context
-        notify_user(request, catflap, event)
+        notify_user(catflap, event)
 
         return EventMutation(event=event)
 
