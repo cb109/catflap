@@ -1,4 +1,5 @@
 import graphene
+from django.conf import settings
 from django.urls import reverse
 from graphene_django import DjangoObjectType
 from server.catflap.models import CatFlap, Event
@@ -27,19 +28,25 @@ class EventType(DjangoObjectType):
             "kind",
         )
 
+
 def notify_user(request, catflap, event):
     located_at = "inside" if catflap.cat_inside else "outside"
-    inverse_located = "inside" if located_at == "outside" else "outside"
-    correction_url = request.build_absolute_uri(
-        reverse(f"set-{inverse_located}", args=(catflap.id,))
+    current_url = settings.NOTIFICATION_BASE_URL + reverse(
+        f"set-{located_at}", args=(catflap.id,)
+    )
+
+    inverse_located_at = "inside" if located_at == "outside" else "outside"
+    inverse_url = settings.NOTIFICATION_BASE_URL + reverse(
+        f"set-{inverse_located_at}", args=(catflap.id,)
     )
 
     title = f"{catflap.cat_name} is {located_at} now"
     message = (
         f"{catflap.name} {event.kind_label}: {catflap.cat_name} is likely "
         f"<b>{located_at}</b> now.\n\n"
-        f"Wrong? Fix here: {catflap.cat_name} "
-        f"is <a href='{correction_url}'>{inverse_located}</a>"
+        f"Wrong? Set location manually here: {catflap.cat_name} is "
+        f"<a href='{inverse_url}'>{inverse_located_at}</a> / "
+        f"<a href='{current_url}'>{located_at}</a> / "
     )
     send_push_notification(message, title=title)
 
@@ -53,7 +60,6 @@ class EventMutation(graphene.Mutation):
 
     @classmethod
     def mutate(cls, root, info, catflap_id, kind):
-
         catflap = CatFlap.objects.get(id=catflap_id)
         event = Event(catflap=catflap, kind=kind)
         event.full_clean()
