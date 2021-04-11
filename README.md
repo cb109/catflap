@@ -17,6 +17,26 @@ Lower baudrate of 115200 can help to prevent flashing problems.
     $ sudo esptool.py --port /dev/ttyUSB0 erase_flash
     $ sudo esptool.py --port /dev/ttyUSB0 --baud 115200 write_flash --flash_size=detect 0 ~/Downloads/esp8266-20200911-v1.13.bin
 
+### Hard Reset of a Wemos D1 Mini
+
+It's a bit involved (see https://www.reddit.com/r/esp8266/comments/7398fn/resetting_wemos_d1_mini/):
+
+- Connect GPIO 0 (aka D3) to GND
+- Connect GPIO 15 (aka D8) to GND
+- Connect GPIO 2 (aka D4) to 3.3V
+- Then flash the new firmware, or try a new programm
+
+### Deep Sleep
+
+    def deepsleep(ms):
+        rtc = machine.RTC()
+        rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
+        rtc.alarm(rtc.ALARM0, ms)
+        machine.deepsleep()
+
+    deepsleep(5000)
+    woken_from_deepsleep = machine.reset_cause() == machine.DEEPSLEEP_RESET
+
 ## REPL
 
 See: http://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
@@ -41,6 +61,16 @@ Toggle like this:
 - `$ pip install adafruit-ampy`
 - List files on board: `$ ampy --port /dev/ttyUSB0 ls`
 - Copy file to board: `$ ampy --port /dev/ttyUSB0 put main.py`
+
+### Install MicroPython libraries
+
+- Open a shell to the board
+- Within the REPL type:
+
+    ```python
+    >>> import upip
+    >>> upip.install("micropython-uasyncio")
+    ```
 
 ## Read A3144 Hall Effect Sensor Value
 

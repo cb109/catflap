@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from server.catflap.models import CatFlap, Event
+from server.catflap.push import send_push_notification
 
 
 class CatFlapType(DjangoObjectType):
@@ -39,6 +40,10 @@ class EventMutation(graphene.Mutation):
         event = Event(catflap=catflap, kind=kind)
         event.full_clean()
         event.save()
+
+        message = f"{catflap.name} {event.kind_label}"
+        send_push_notification(message, title=message)
+
         return EventMutation(event=event)
 
 

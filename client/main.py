@@ -1,13 +1,30 @@
 import os
 import time
 
+import esp
+import machine
 import network
 from machine import Pin, Signal
 
+try:
+    import urequests as requests
+except ImportError:
+    import requests
+
+
+esp.sleep_type(esp.SLEEP_LIGHT)
+
+SLEEP_MS = 333
+EVENT_OPENED_CLOSED = "OC"
+
 default_config = {
+    # Hardware internals
     "SENSOR_PIN_INDEX": 4,
     "INTERNAL_LED_PIN_INDEX": 2,
     "CATFLAP_CLOSED_SENSOR_STATE": 1,
+    # Configuration
+    "API_URL": None,
+    "CATFLAP_ID": 1,
     "WIFI_SSID": None,
     "WIFI_PSK": None,
 }
@@ -31,6 +48,8 @@ def get_config(filepath=".env"):
             print("[WARN] Unreadable config line: " + line)
             continue
         key, value = key.strip(), value.strip()
+        if value in ("0", "1"):
+            value = int(value)
         config[key] = value
 
     return config
@@ -77,6 +96,26 @@ def connect_to_wifi(config, timeout_seconds=10):
     return wifi
 
 
+def notify_server_about_catflap_opened_closed(config):
+    query = """
+        mutation {{
+            createEvent(catflapId: {catflap_id}, kind: "OC") {{
+                event {{
+                    id
+                    createdAt
+                    kindLabel
+                }}
+            }}
+        }}
+    """.format(
+        catflap_id=config["CATFLAP_ID"]
+    )
+    print("[INFO] Notifying server via API...")
+    response = requests.post(config["API_URL"], json={"query": query})
+    response.close()
+    return response
+
+
 def blink_led(seconds=0.1, times=1):
     for _ in range(times):
         led.on()
@@ -91,21 +130,33 @@ led = get_internal_led(config["INTERNAL_LED_PIN_INDEX"])
 sensor = get_sensor(config["SENSOR_PIN_INDEX"])
 previous_sensor_state = sensor.value()
 
-# Connect to Wifi last so we can blink if succeeding
+# Connect to Wifi last, so we can blink when succeeding.
 wifi = connect_to_wifi(config)
 
-while True:
-    sensor_state = sensor.value()
 
+def loop_once():
+    global previous_sensor_state
+    sensor_state = sensor.value()
     has_changed = sensor_state != previous_sensor_state
     if not has_changed:
-        continue
-
-    blink_led()
-    previous_sensor_state = sensor_state
-
-    is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
-    if is_closed:
-        print("[INFO] Catflap has been closed |")
+        pass
     else:
-        print("[INFO] Catflap has been opened \\")
+        is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
+        if is_closed:
+            notify_server_about_catflap_opened_closed(config)
+            print("[INFO] Catflap has been closed |")
+        else:
+            print("[INFO] Catflap has been opened \\")
+
+        blink_led()
+        previous_sensor_state = sensor_state
+
+    machine.lightsleep(SLEEP_MS)
+
+
+def loop_forever():
+    while True:
+        loop_once()
+
+
+loop_forever()

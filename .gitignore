@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 .fuse_hidden*
+staticfiles/

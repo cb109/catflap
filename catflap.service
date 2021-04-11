@@ -1,0 +1,18 @@
+[Unit]
+Description=Catflap
+
+[Service]
+User=root
+WorkingDirectory=/opt/catflap/
+ExecStart=/~/.virtualenvs/catflap/bin/gunicorn catflap.wsgi:application \
+          --workers 1 \
+          --bind 127.0.0.1:1234 \
+          --log-level debug \
+          --certfile /etc/letsencrypt/live/catflap.com/fullchain.pem \
+          --keyfile /etc/letsencrypt/live/catflap.com/privkey.pem \
+          --access-logfile /var/log/catflap-access.log \
+          --error-logfile /var/log/catflap-error.log
+
+[Install]
+WantedBy=multi-user.target
+Alias=catflap.service
