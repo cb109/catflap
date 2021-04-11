@@ -47,7 +47,13 @@ def notify_user(catflap, event):
         duration = pendulum.instance(event.created_at) - pendulum.instance(
             previous_event.created_at
         )
-        duration_str = f" (after {duration.in_words()})"
+        duration_str = (
+            f" (after {duration.in_words()})"
+            .replace("days", "d")
+            .replace("hours", "h")
+            .replace("minutes", "m")
+            .replace("seconds", "s")
+        )
 
     title = f"{catflap.cat_name} is {located_at} now{duration_str}"
     message = (
