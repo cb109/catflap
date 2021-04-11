@@ -19,5 +19,4 @@ def send_push_notification(message, title=None):
     client = PushoverClient(
         settings.PUSHOVER_USER_KEY, api_token=settings.PUSHOVER_API_TOKEN
     )
-    client.send_message(message, title=title)
-
+    client.send_message(message, title=title, html=True)

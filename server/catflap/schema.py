@@ -48,7 +48,7 @@ def notify_user(request, catflap, event):
         f"<a href='{inverse_url}'>{inverse_located_at}</a> / "
         f"<a href='{current_url}'>{located_at}</a> / "
     )
-    send_push_notification(message, title=title, html=True)
+    send_push_notification(message, title=title)
 
 
 class EventMutation(graphene.Mutation):
