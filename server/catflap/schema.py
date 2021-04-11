@@ -41,7 +41,12 @@ class EventMutation(graphene.Mutation):
         event.full_clean()
         event.save()
 
-        message = f"{catflap.name} {event.kind_label}"
+        catflap.cat_inside = not catflap.cat_inside
+        catflap.save()
+
+        cat_name = catflap.cat_name or "Cat"
+        cat_status = "inside" if catflap.cat_inside else "outside"
+        message = f"{catflap.name}: {cat_name} is {cat_status} now"
         send_push_notification(message, title=message)
 
         return EventMutation(event=event)
