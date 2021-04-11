@@ -13,7 +13,7 @@ class CatFlap(BaseModel):
     """A device with sensors to detect movement events."""
 
     name = models.CharField(max_length=64)
-    cat_name = models.CharField(max_length=64, default="", blank=True)
+    cat_name = models.CharField(max_length=64, default="Cat")
     cat_inside = models.BooleanField(default=True)
 
     def __str__(self):
