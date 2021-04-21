@@ -32,10 +32,7 @@ class Event(BaseModel):
         OPENED_INWARD = "OI"
         OPENED_OUTWARD = "OO"
 
-    kind = models.CharField(
-        max_length=2,
-        choices=Kinds.choices,
-    )
+    kind = models.CharField(max_length=2, choices=Kinds.choices,)
 
     @property
     def kind_label(self):
@@ -43,3 +40,10 @@ class Event(BaseModel):
 
     def __str__(self):
         return f"{self.created_at} {self.catflap.name} {self.kind}"
+
+
+class ManualStatusUpdate(BaseModel):
+    """Someone changed the cat_inside status to correct it."""
+
+    catflap = models.ForeignKey("catflap.CatFlap", on_delete=models.CASCADE)
+    cat_inside = models.BooleanField()
