@@ -18,4 +18,5 @@ urlpatterns = [
         views.set_catflap_cat_outside,
         name="set-outside",
     ),
+    path("catflaps/<int:catflap_id>/status", views.get_catflap_status, name="status",),
 ]
