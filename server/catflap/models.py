@@ -47,3 +47,8 @@ class ManualStatusUpdate(BaseModel):
 
     catflap = models.ForeignKey("catflap.CatFlap", on_delete=models.CASCADE)
     cat_inside = models.BooleanField()
+
+    def __str__(self):
+        location = "inside" if self.cat_inside else "outside"
+        return f"{self.catflap.name} -> {location}"
+
