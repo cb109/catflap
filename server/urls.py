@@ -9,14 +9,18 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path(
-        "catflaps/<int:catflap_id>/inside",
+        "catflaps/<uuid:catflap_uuid>/inside",
         views.set_catflap_cat_inside,
         name="set-inside",
     ),
     path(
-        "catflaps/<int:catflap_id>/outside",
+        "catflaps/<uuid:catflap_uuid>/outside",
         views.set_catflap_cat_outside,
         name="set-outside",
     ),
-    path("catflaps/<int:catflap_id>/status", views.get_catflap_status, name="status",),
+    path(
+        "catflaps/<uuid:catflap_uuid>/status",
+        views.get_catflap_status,
+        name="status",
+    ),
 ]

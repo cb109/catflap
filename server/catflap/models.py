@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 
@@ -12,6 +14,7 @@ class BaseModel(models.Model):
 class CatFlap(BaseModel):
     """A device with sensors to detect movement events."""
 
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=64)
     cat_name = models.CharField(max_length=64, default="Cat")
     cat_inside = models.BooleanField(default=True)
@@ -32,7 +35,10 @@ class Event(BaseModel):
         OPENED_INWARD = "OI"
         OPENED_OUTWARD = "OO"
 
-    kind = models.CharField(max_length=2, choices=Kinds.choices,)
+    kind = models.CharField(
+        max_length=2,
+        choices=Kinds.choices,
+    )
 
     @property
     def kind_label(self):
@@ -51,4 +57,3 @@ class ManualStatusUpdate(BaseModel):
     def __str__(self):
         location = "inside" if self.cat_inside else "outside"
         return f"{self.catflap.name} -> {location}"
-

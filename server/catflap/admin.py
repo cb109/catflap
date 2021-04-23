@@ -9,11 +9,12 @@ class CatFlapAdmin(admin.ModelAdmin):
         "cat_inside",
         "created_at",
         "modified_at",
-        "id",
+        "uuid",
     )
     readonly_fields = (
         "created_at",
         "modified_at",
+        "uuid",
     )
     search_fields = ("name",)
 
