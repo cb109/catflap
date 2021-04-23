@@ -48,8 +48,7 @@ def notify_user(catflap, event):
             previous_event.created_at
         )
         duration_str = (
-            f" (after {duration.in_words()})"
-            .replace("days", "d")
+            f" (after {duration.in_words()})".replace("days", "d")
             .replace("hours", "h")
             .replace("minutes", "m")
             .replace("seconds", "s")
@@ -61,7 +60,7 @@ def notify_user(catflap, event):
         f"<b>{located_at}</b> now.\n\n"
         f"Wrong? Set location manually here: {catflap.cat_name} is "
         f"<a href='{inverse_url}'>{inverse_located_at}</a> / "
-        f"<a href='{current_url}'>{located_at}</a> / "
+        f"<a href='{current_url}'>{located_at}</a>"
     )
     send_push_notification(message, title=title)
 
