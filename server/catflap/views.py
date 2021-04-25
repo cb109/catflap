@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+import pendulum
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
@@ -50,13 +51,16 @@ def set_catflap_cat_outside(request, catflap_uuid):
 
 
 def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> list:
-    event_values = catflap.events.filter(created_at__gte=threshold).values("created_at")
+    event_values = catflap.events.filter(created_at__gte=threshold).values(
+        "created_at",
+    )
 
-    # update_values = ManualStatusUpdate.objects.filter(
-    #     catflap=catflap, created_at__gte=threshold
-    # ).values("created_at", "cat_inside")
-
-    update_values = []
+    update_values = ManualStatusUpdate.objects.filter(
+        catflap=catflap, created_at__gte=threshold
+    ).values(
+        "created_at",
+        "cat_inside",
+    )
 
     all_values = sorted(
         list(event_values) + list(update_values),
@@ -66,45 +70,64 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
     return all_values
 
 
-def get_inside_outside_series(catflap, num_days_ago=7):
+def get_inside_outside_statistics(catflap, num_days_ago=7):
     now = datetime.now(timezone.utc)  # Avoid offset-naive VS offset-aware error.
     days_ago = now - timedelta(days=num_days_ago)
 
     ranges = []
     samples = get_inside_outside_samples_since(catflap, days_ago)
 
-    current_cat_inside = catflap.cat_inside
-    current_range = {"start": None, "end": now, "inside": current_cat_inside}
+    next_cat_inside = catflap.cat_inside
+    current_range = {"start": None, "end": now, "inside": next_cat_inside}
 
     for sample in samples:
+        cat_inside = sample.get("cat_inside", None)
+        is_manual_update = cat_inside is not None
+
         end = sample["created_at"]
         current_range["start"] = end
         ranges.insert(0, current_range)
 
-        current_cat_inside = not current_cat_inside
-        current_range = {"start": None, "end": end, "inside": current_cat_inside}
+        if is_manual_update:
+            next_cat_inside = not cat_inside
+        else:
+            next_cat_inside = not next_cat_inside
 
-    last_range = {"start": days_ago, "end": end, "inside": not current_cat_inside}
+        current_range = {"start": None, "end": end, "inside": next_cat_inside}
+
+    last_range = {"start": days_ago, "end": end, "inside": not next_cat_inside}
     ranges.insert(0, last_range)
+
+    seconds_inside = 0
+    seconds_outside = 0
 
     series = []
     for timerange in ranges:
-        range_start = timerange["start"].strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
-        range_end = timerange["end"].strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
+        range_start = timerange["start"]
+        range_end = timerange["end"]
+        seconds_taken = (range_end - range_start).total_seconds()
+
+        formatted_start = range_start.strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
+        formatted_end = range_end.strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
 
         inside = timerange["inside"]
         category = "Inside" if inside else "Outside"
         fill_color = settings.COLOR_INSIDE if inside else settings.COLOR_OUTSIDE
 
+        if inside:
+            seconds_inside += seconds_taken
+        else:
+            seconds_outside += seconds_taken
+
         series.append(
             {
                 "x": category,
-                "y": [range_start, range_end],
+                "y": [formatted_start, formatted_end],
                 "fillColor": fill_color,
             }
         )
 
-    return series
+    return series, seconds_inside, seconds_outside
 
 
 @require_http_methods(["GET"])
@@ -115,7 +138,19 @@ def get_catflap_status(request, catflap_uuid):
 
     catflap = CatFlap.objects.get(uuid=catflap_uuid)
 
-    apexcharts_series = get_inside_outside_series(catflap, num_days_ago=days)
+    series, seconds_inside, seconds_outside = get_inside_outside_statistics(
+        catflap, num_days_ago=days
+    )
+    seconds_total = seconds_inside + seconds_outside
+    ratio_inside = seconds_inside / (seconds_total / 100.0)
+    ratio_outside = seconds_outside / (seconds_total / 100.0)
+    now = pendulum.now()
+    total_inside_in_words = shorten_pendulum_duration_string(
+        (now - now.subtract(hours=seconds_inside / 60 / 60)).in_words()
+    )
+    total_outside_in_words = shorten_pendulum_duration_string(
+        (now - now.subtract(hours=seconds_outside / 60 / 60)).in_words()
+    )
 
     set_inside_url = settings.NOTIFICATION_BASE_URL + reverse(
         "set-inside", args=(catflap_uuid,)
@@ -138,8 +173,27 @@ def get_catflap_status(request, catflap_uuid):
             "color_inside": settings.COLOR_INSIDE,
             "color_outside": settings.COLOR_OUTSIDE,
             "days": days,
-            "series": apexcharts_series,
+            "statistics": {
+                "ratio_inside": ratio_inside,
+                "ratio_outside": ratio_outside,
+                "series": series,
+                "total_inside_in_words": total_inside_in_words,
+                "total_outside_in_words": total_outside_in_words,
+            },
             "set_inside_url": set_inside_url,
             "set_outside_url": set_outside_url,
         },
+    )
+
+
+def shorten_pendulum_duration_string(duration_str):
+    return (
+        duration_str.replace(" days", "d")
+        .replace(" day", "d")
+        .replace(" hours", "h")
+        .replace(" hour", "h")
+        .replace(" minutes", "m")
+        .replace(" minute", "m")
+        .replace(" seconds", "s")
+        .replace(" second", "s")
     )

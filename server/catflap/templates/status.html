@@ -15,11 +15,8 @@
       <p
         class="
           title
-          {% if catflap.cat_inside %}
-          color-inside
-          {% else %}
-          color-outside
-          {% endif %}
+          has-text-weight-bold
+          {% if catflap.cat_inside %}color-inside{% else %}color-outside{% endif %}
         "
       >
         {{ catflap.cat_location }}
@@ -28,8 +25,16 @@
       <div class="has-text-grey">
         Wrong? Set location manually:
         <span style="white-space: nowrap;">
-          <a href="{{ set_inside_url }}?days={{ days }}">inside</a> /
-          <a href="{{ set_outside_url }}?days={{ days }}">outside</a>
+          <a
+            href="{{ set_outside_url }}?days={{ days }}"
+          >
+            outside
+          </a> /
+          <a
+            href="{{ set_inside_url }}?days={{ days }}"
+          >
+            inside
+          </a>
         </span>
       </div>
     </div>
@@ -56,10 +61,29 @@
       >2w</a>
     </div>
     <div id="chart" class="mx-4"></div>
+    <div class="container">
+      <table
+        class="table is-hoverable mx-7"
+      >
+        <th>Where</th>
+        <th>%</th>
+        <th>Total</th>
+        <tr>
+          <td class="color-outside"><b>Outside</b></td>
+          <td>{{ statistics.ratio_outside|floatformat }}</td>
+          <td>{{ statistics.total_outside_in_words }}</td>
+        </tr>
+        <tr>
+          <td class="color-inside"><b>Inside</b></td>
+          <td>{{ statistics.ratio_inside|floatformat }}</td>
+          <td>{{ statistics.total_inside_in_words }}</td>
+        </tr>
+      </table>
+    </div>
   </section>
 </div>
 
-{{ series|json_script:"series" }}
+{{ statistics.series|json_script:"series" }}
 
 <script>
 
@@ -131,10 +155,10 @@ setTimeout(function() {
 }
 
 .color-inside {
-  color: {{ color_inside }};
+  color: {{ color_inside }} !important;
 }
 .color-outside {
-  color: {{ color_outside }};
+  color: {{ color_outside }} !important;
 }
 
 </style>
