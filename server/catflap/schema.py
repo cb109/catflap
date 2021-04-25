@@ -31,14 +31,14 @@ class EventType(DjangoObjectType):
 
 
 def notify_user(catflap, event):
-    located_at = "inside" if catflap.cat_inside else "outside"
+    located_at = catflap.cat_location
     current_url = settings.NOTIFICATION_BASE_URL + reverse(
-        f"set-{located_at}", args=(catflap.id,)
+        f"set-{located_at}", args=(catflap.uuid,)
     )
 
     inverse_located_at = "inside" if located_at == "outside" else "outside"
     inverse_url = settings.NOTIFICATION_BASE_URL + reverse(
-        f"set-{inverse_located_at}", args=(catflap.id,)
+        f"set-{inverse_located_at}", args=(catflap.uuid,)
     )
 
     duration_str = ""

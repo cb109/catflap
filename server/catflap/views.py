@@ -1,5 +1,8 @@
-from django.http import HttpResponse
-from django.shortcuts import redirect
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from server.catflap.models import CatFlap, ManualStatusUpdate
 
@@ -36,5 +39,19 @@ def set_catflap_cat_outside(request, catflap_uuid):
 @require_http_methods(["GET"])
 def get_catflap_status(request, catflap_uuid):
     catflap = CatFlap.objects.get(uuid=catflap_uuid)
-    location = "inside" if catflap.cat_inside else "outside"
-    return HttpResponse(f"{catflap.cat_name} is likely {location}")
+    set_inside_url = settings.NOTIFICATION_BASE_URL + reverse(
+        "set-inside", args=(catflap_uuid,)
+    )
+    set_outside_url = settings.NOTIFICATION_BASE_URL + reverse(
+        "set-outside", args=(catflap_uuid,)
+    )
+    return render(
+        request,
+        "status.html",
+        {
+            "cat_picture_url": settings.CAT_PICTURE_URL,
+            "catflap": catflap,
+            "set_inside_url": set_inside_url,
+            "set_outside_url": set_outside_url,
+        },
+    )

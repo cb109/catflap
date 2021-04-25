@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+{% comment %} * { outline: 1px solid red; } {% endcomment %}
+
+</style>
+
+<div class="container">
+  <section class="hero has-text-centered">
+    <div class="hero-body">
+      <img src="{{ cat_picture_url }}" style="max-width: 160px">
+      <p class="subtitle mt-5">
+        <b>{{ catflap.cat_name }}</b> is likely
+      </p>
+      <p
+        class="
+          title
+          {% if catflap.cat_inside %}
+          has-text-success
+          {% else %}
+          has-text-danger
+          {% endif %}
+        "
+      >
+        {{ catflap.cat_location }}
+      </p>
+      <p class="subtitle">at the moment</p>
+    </div>
+    <div class="has-text-grey">
+      Wrong? Set location manually:
+      <a href="{{ set_inside_url }}">inside</a> /
+      <a href="{{ set_outside_url }}">outside</a>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

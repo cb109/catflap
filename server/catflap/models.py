@@ -19,6 +19,10 @@ class CatFlap(BaseModel):
     cat_name = models.CharField(max_length=64, default="Cat")
     cat_inside = models.BooleanField(default=True)
 
+    @property
+    def cat_location(self):
+        return "inside" if self.cat_inside else "outside"
+
     def __str__(self):
         return self.name
 
@@ -26,7 +30,9 @@ class CatFlap(BaseModel):
 class Event(BaseModel):
     """A movement event on a Catflap device."""
 
-    catflap = models.ForeignKey("catflap.CatFlap", on_delete=models.CASCADE)
+    catflap = models.ForeignKey(
+        "catflap.CatFlap", on_delete=models.CASCADE, related_name="events"
+    )
 
     class Kinds(models.TextChoices):
         CLOSED = "CL"
@@ -54,6 +60,9 @@ class ManualStatusUpdate(BaseModel):
     catflap = models.ForeignKey("catflap.CatFlap", on_delete=models.CASCADE)
     cat_inside = models.BooleanField()
 
+    @property
+    def cat_location(self):
+        return "inside" if self.cat_inside else "outside"
+
     def __str__(self):
-        location = "inside" if self.cat_inside else "outside"
-        return f"{self.catflap.name} -> {location}"
+        return f"{self.catflap.name} -> {self.cat_location}"
