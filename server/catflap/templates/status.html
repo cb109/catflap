@@ -25,40 +25,24 @@
       <div class="has-text-grey">
         Wrong? Set location manually:
         <span style="white-space: nowrap;">
-          <a
-            href="{{ set_outside_url }}?days={{ days }}"
-          >
+          <a href="{{ set_outside_url }}?days={{ days }}">
             outside
           </a> /
-          <a
-            href="{{ set_inside_url }}?days={{ days }}"
-          >
+          <a href="{{ set_inside_url }}?days={{ days }}">
             inside
           </a>
         </span>
       </div>
     </div>
     <div>
+      {% for dayfilter in dayfilters %}
       <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}"
-        class="days-link {% if not days or days == 1 %}active{% endif %}"
-      >24h</a>
-      <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=2"
-        class="days-link {% if days == 2 %}active{% endif %}"
-      >2d</a>
-      <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=3"
-        class="days-link {% if days == 3 %}active{% endif %}"
-      >3d</a>
-      <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=7"
-        class="days-link {% if days == 7 %}active{% endif %}"
-      >1w</a>
-      <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=14"
-        class="days-link {% if days == 14 %}active{% endif %}"
-      >2w</a>
+        href="{% url 'status' catflap_uuid=catflap.uuid %}?days={{ dayfilter.days }}"
+        class="days-link {% if days == dayfilter.days %}active{% endif %}"
+      >
+        {{ dayfilter.label }}
+      </a>
+      {% endfor %}
     </div>
     <div id="chart" class="mx-4"></div>
     <div class="container">

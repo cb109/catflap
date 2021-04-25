@@ -163,6 +163,13 @@ def get_catflap_status(request, catflap_uuid):
         if catflap.cat_inside
         else settings.PICTURE_URL_CAT_OUTSIDE
     )
+    dayfilters = [
+        {"label": "24h", "days": 1},
+        {"label": "2d", "days": 2},
+        {"label": "3d", "days": 3},
+        {"label": "1w", "days": 7},
+        {"label": "2w", "days": 14},
+    ]
     return render(
         request,
         "status.html",
@@ -172,6 +179,7 @@ def get_catflap_status(request, catflap_uuid):
             "catflap": catflap,
             "color_inside": settings.COLOR_INSIDE,
             "color_outside": settings.COLOR_OUTSIDE,
+            "dayfilters": dayfilters,
             "days": days,
             "statistics": {
                 "ratio_inside": ratio_inside,
