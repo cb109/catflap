@@ -28,10 +28,32 @@
       <div class="has-text-grey">
         Wrong? Set location manually:
         <span style="white-space: nowrap;">
-          <a href="{{ set_inside_url }}">inside</a> /
-          <a href="{{ set_outside_url }}">outside</a>
+          <a href="{{ set_inside_url }}?days={{ days }}">inside</a> /
+          <a href="{{ set_outside_url }}?days={{ days }}">outside</a>
         </span>
       </div>
+    </div>
+    <div>
+      <a
+        href="{% url 'status' catflap_uuid=catflap.uuid %}"
+        class="days-link {% if not days or days == 1 %}active{% endif %}"
+      >24h</a>
+      <a
+        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=2"
+        class="days-link {% if days == 2 %}active{% endif %}"
+      >2d</a>
+      <a
+        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=3"
+        class="days-link {% if days == 3 %}active{% endif %}"
+      >3d</a>
+      <a
+        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=7"
+        class="days-link {% if days == 7 %}active{% endif %}"
+      >1w</a>
+      <a
+        href="{% url 'status' catflap_uuid=catflap.uuid %}?days=14"
+        class="days-link {% if days == 14 %}active{% endif %}"
+      >2w</a>
     </div>
     <div id="chart" class="mx-4"></div>
   </section>
@@ -41,7 +63,12 @@
 
 <script>
 
-const series = JSON.parse(document.getElementById('series').textContent);
+const rawSeries = JSON.parse(document.getElementById('series').textContent);
+const series = rawSeries.map(sample => {
+  sample.y[0] = new Date(sample.y[0]).getTime();
+  sample.y[1] = new Date(sample.y[1]).getTime();
+  return sample;
+});
 
 const options = {
   chart: {
@@ -95,6 +122,13 @@ setTimeout(function() {
 <style>
 
 [dbg], [dbg] *, .dbg, .dbg * { outline: 1px solid red; }
+
+.days-link {
+  margin-right: 16px;
+}
+.days-link.active {
+  text-decoration: underline;
+}
 
 </style>
 

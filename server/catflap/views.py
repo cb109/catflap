@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from server.catflap.models import CatFlap, ManualStatusUpdate
+
+APEXCHARTS_RANGEBAR_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def track_manual_intervention(catflap, cat_inside):
@@ -12,6 +15,14 @@ def track_manual_intervention(catflap, cat_inside):
         catflap=catflap,
         cat_inside=catflap.cat_inside,
     )
+
+
+def redirect_to_status_page(request, catflap_uuid):
+    days = request.GET.get("days")
+    url = reverse("status", kwargs={"catflap_uuid": catflap_uuid}) + (
+        f"?days={days}" if days else ""
+    )
+    return redirect(url)
 
 
 @require_http_methods(["GET"])
@@ -22,7 +33,8 @@ def set_catflap_cat_inside(request, catflap_uuid):
         catflap.cat_inside = True
         catflap.save()
         track_manual_intervention(catflap, cat_inside=True)
-    return redirect("status", catflap_uuid=catflap_uuid)
+
+    return redirect_to_status_page(request, catflap_uuid)
 
 
 @require_http_methods(["GET"])
@@ -33,7 +45,8 @@ def set_catflap_cat_outside(request, catflap_uuid):
         catflap.cat_inside = False
         catflap.save()
         track_manual_intervention(catflap, cat_inside=False)
-    return redirect("status", catflap_uuid=catflap_uuid)
+
+    return redirect_to_status_page(request, catflap_uuid)
 
 
 def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> list:
@@ -53,7 +66,7 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
     return all_values
 
 
-def get_inside_outside_series(catflap, num_days_ago=1):
+def get_inside_outside_series(catflap, num_days_ago=7):
     now = datetime.now(timezone.utc)  # Avoid offset-naive VS offset-aware error.
     days_ago = now - timedelta(days=num_days_ago)
 
@@ -76,8 +89,8 @@ def get_inside_outside_series(catflap, num_days_ago=1):
 
     series = []
     for timerange in ranges:
-        range_start = timerange["start"].timestamp()
-        range_end = timerange["end"].timestamp()
+        range_start = timerange["start"].strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
+        range_end = timerange["end"].strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
 
         inside = timerange["inside"]
         category = "Inside" if inside else "Outside"
@@ -96,9 +109,13 @@ def get_inside_outside_series(catflap, num_days_ago=1):
 
 @require_http_methods(["GET"])
 def get_catflap_status(request, catflap_uuid):
+    days = int(request.GET.get("days", "1"))
+    if days > 14:
+        raise ValidationError("Looking back more than 14 days back is not allowed")
+
     catflap = CatFlap.objects.get(uuid=catflap_uuid)
 
-    apexcharts_series = get_inside_outside_series(catflap)
+    apexcharts_series = get_inside_outside_series(catflap, num_days_ago=days)
 
     set_inside_url = settings.NOTIFICATION_BASE_URL + reverse(
         "set-inside", args=(catflap_uuid,)
@@ -118,6 +135,7 @@ def get_catflap_status(request, catflap_uuid):
             "cat_picture_location_url": cat_picture_location_url,
             "cat_picture_url": settings.PICTURE_URL_CAT,
             "catflap": catflap,
+            "days": days,
             "series": apexcharts_series,
             "set_inside_url": set_inside_url,
             "set_outside_url": set_outside_url,
