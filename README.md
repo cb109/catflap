@@ -1,5 +1,11 @@
 # catflap
 
+Client and server software to track where the cat is.
+
+## Cat Status Web UI
+
+![](https://i.imgur.com/r2oAMco.png)
+
 ## Useful collections of tips regarding MicroPython on a Wemos D1 Mini
 
 http://www.mark-fink.de/2020-03-24-micropython-on-esp8266/
