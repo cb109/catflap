@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django.conf import settings
 from django.shortcuts import redirect, render
@@ -45,11 +45,17 @@ def get_catflap_status(request, catflap_uuid):
     set_outside_url = settings.NOTIFICATION_BASE_URL + reverse(
         "set-outside", args=(catflap_uuid,)
     )
+    cat_picture_location_url = (
+        settings.PICTURE_URL_CAT_INSIDE
+        if catflap.cat_inside
+        else settings.PICTURE_URL_CAT_OUTSIDE
+    )
     return render(
         request,
         "status.html",
         {
-            "cat_picture_url": settings.CAT_PICTURE_URL,
+            "cat_picture_location_url": cat_picture_location_url,
+            "cat_picture_url": settings.PICTURE_URL_CAT,
             "catflap": catflap,
             "set_inside_url": set_inside_url,
             "set_outside_url": set_outside_url,

@@ -21,7 +21,7 @@ class CatFlap(BaseModel):
 
     @property
     def cat_location(self):
-        return "inside" if self.cat_inside else "outside"
+        return describe_location(self.cat_inside)
 
     def __str__(self):
         return self.name
@@ -35,11 +35,7 @@ class Event(BaseModel):
     )
 
     class Kinds(models.TextChoices):
-        CLOSED = "CL"
-        OPENED = "O"
         OPENED_CLOSED = "OC"
-        OPENED_INWARD = "OI"
-        OPENED_OUTWARD = "OO"
 
     kind = models.CharField(
         max_length=2,
@@ -62,7 +58,11 @@ class ManualStatusUpdate(BaseModel):
 
     @property
     def cat_location(self):
-        return "inside" if self.cat_inside else "outside"
+        return describe_location(self.cat_inside)
 
     def __str__(self):
         return f"{self.catflap.name} -> {self.cat_location}"
+
+
+def describe_location(cat_inside):
+    return "inside" if cat_inside else "outside"

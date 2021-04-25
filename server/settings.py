@@ -126,4 +126,6 @@ PUSHOVER_API_TOKEN = None
 
 NOTIFICATION_BASE_URL = "http://localhost:8000"
 
-CAT_PICTURE_URL = "https://i.imgur.com/A62SpFR.png"
+PICTURE_URL_CAT = "https://i.imgur.com/ABrhLTn.png"
+PICTURE_URL_CAT_INSIDE = "https://i.imgur.com/iQPfFax.png"
+PICTURE_URL_CAT_OUTSIDE = "https://i.imgur.com/GE0u2vj.png"
