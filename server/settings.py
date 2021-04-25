@@ -126,6 +126,10 @@ PUSHOVER_API_TOKEN = None
 
 NOTIFICATION_BASE_URL = "http://localhost:8000"
 
+# COLOR_INSIDE = "#8ac4ff"
+COLOR_INSIDE = "#7A7978"
+COLOR_OUTSIDE = "#48c774"
+
 PICTURE_URL_CAT = "https://i.imgur.com/ABrhLTn.png"
 PICTURE_URL_CAT_INSIDE = "https://i.imgur.com/iQPfFax.png"
 PICTURE_URL_CAT_OUTSIDE = "https://i.imgur.com/GE0u2vj.png"

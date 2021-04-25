@@ -94,7 +94,7 @@ def get_inside_outside_series(catflap, num_days_ago=7):
 
         inside = timerange["inside"]
         category = "Inside" if inside else "Outside"
-        fill_color = "#48c774" if inside else "#f14668"
+        fill_color = settings.COLOR_INSIDE if inside else settings.COLOR_OUTSIDE
 
         series.append(
             {
@@ -135,6 +135,8 @@ def get_catflap_status(request, catflap_uuid):
             "cat_picture_location_url": cat_picture_location_url,
             "cat_picture_url": settings.PICTURE_URL_CAT,
             "catflap": catflap,
+            "color_inside": settings.COLOR_INSIDE,
+            "color_outside": settings.COLOR_OUTSIDE,
             "days": days,
             "series": apexcharts_series,
             "set_inside_url": set_inside_url,

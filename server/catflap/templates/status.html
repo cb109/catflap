@@ -16,9 +16,9 @@
         class="
           title
           {% if catflap.cat_inside %}
-          has-text-success
+          color-inside
           {% else %}
-          has-text-danger
+          color-outside
           {% endif %}
         "
       >
@@ -128,6 +128,13 @@ setTimeout(function() {
 }
 .days-link.active {
   text-decoration: underline;
+}
+
+.color-inside {
+  color: {{ color_inside }};
+}
+.color-outside {
+  color: {{ color_outside }};
 }
 
 </style>
