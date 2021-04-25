@@ -36,9 +36,70 @@ def set_catflap_cat_outside(request, catflap_uuid):
     return redirect("status", catflap_uuid=catflap_uuid)
 
 
+def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> list:
+    event_values = catflap.events.filter(created_at__gte=threshold).values("created_at")
+
+    # update_values = ManualStatusUpdate.objects.filter(
+    #     catflap=catflap, created_at__gte=threshold
+    # ).values("created_at", "cat_inside")
+
+    update_values = []
+
+    all_values = sorted(
+        list(event_values) + list(update_values),
+        key=lambda item: item["created_at"],
+        reverse=True,
+    )
+    return all_values
+
+
+def get_inside_outside_series(catflap, num_days_ago=1):
+    now = datetime.now(timezone.utc)  # Avoid offset-naive VS offset-aware error.
+    days_ago = now - timedelta(days=num_days_ago)
+
+    ranges = []
+    samples = get_inside_outside_samples_since(catflap, days_ago)
+
+    current_cat_inside = catflap.cat_inside
+    current_range = {"start": None, "end": now, "inside": current_cat_inside}
+
+    for sample in samples:
+        end = sample["created_at"]
+        current_range["start"] = end
+        ranges.insert(0, current_range)
+
+        current_cat_inside = not current_cat_inside
+        current_range = {"start": None, "end": end, "inside": current_cat_inside}
+
+    last_range = {"start": days_ago, "end": end, "inside": not current_cat_inside}
+    ranges.insert(0, last_range)
+
+    series = []
+    for timerange in ranges:
+        range_start = timerange["start"].timestamp()
+        range_end = timerange["end"].timestamp()
+
+        inside = timerange["inside"]
+        category = "Inside" if inside else "Outside"
+        fill_color = "#48c774" if inside else "#f14668"
+
+        series.append(
+            {
+                "x": category,
+                "y": [range_start, range_end],
+                "fillColor": fill_color,
+            }
+        )
+
+    return series
+
+
 @require_http_methods(["GET"])
 def get_catflap_status(request, catflap_uuid):
     catflap = CatFlap.objects.get(uuid=catflap_uuid)
+
+    apexcharts_series = get_inside_outside_series(catflap)
+
     set_inside_url = settings.NOTIFICATION_BASE_URL + reverse(
         "set-inside", args=(catflap_uuid,)
     )
@@ -57,6 +118,7 @@ def get_catflap_status(request, catflap_uuid):
             "cat_picture_location_url": cat_picture_location_url,
             "cat_picture_url": settings.PICTURE_URL_CAT,
             "catflap": catflap,
+            "series": apexcharts_series,
             "set_inside_url": set_inside_url,
             "set_outside_url": set_outside_url,
         },

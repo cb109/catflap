@@ -5,9 +5,9 @@
 <div class="container">
   <section class="hero has-text-centered">
     <div class="hero-body">
-      <div>
-        <img src="{{ cat_picture_location_url }}" style="max-width: 184px">
-        <img src="{{ cat_picture_url }}" style="max-width: 184px">
+      <div class="is-flex is-flex-wrap-nowrap is-justify-content-center">
+        <img src="{{ cat_picture_location_url }}" style="max-width: 50%">
+        <img src="{{ cat_picture_url }}" style="max-width: 50%">
       </div>
       <p class="subtitle mt-5">
         <b>{{ catflap.cat_name }}</b> is likely
@@ -27,16 +27,75 @@
       <p class="subtitle">at the moment</p>
       <div class="has-text-grey">
         Wrong? Set location manually:
-        <a href="{{ set_inside_url }}">inside</a> /
-        <a href="{{ set_outside_url }}">outside</a>
+        <span style="white-space: nowrap;">
+          <a href="{{ set_inside_url }}">inside</a> /
+          <a href="{{ set_outside_url }}">outside</a>
+        </span>
       </div>
     </div>
-    <div class="has-text-grey">
-      Wrong? Set location manually:
-      <a href="{{ set_inside_url }}">inside</a> /
-      <a href="{{ set_outside_url }}">outside</a>
-    </div>
+    <div id="chart" class="mx-4"></div>
   </section>
 </div>
+
+{{ series|json_script:"series" }}
+
+<script>
+
+const series = JSON.parse(document.getElementById('series').textContent);
+
+const options = {
+  chart: {
+    id: 'chart',
+    height: 180,
+    type: 'rangeBar',
+    animations: {
+      enabled: false,
+    },
+  },
+  grid: {
+    show: false,
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      barHeight: '100%'
+    }
+  },
+  series: [
+    {
+      name: 'Location',
+      data: series
+    },
+  ],
+  xaxis: {
+    type: 'datetime'
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  }
+}
+
+var chart = new ApexCharts(document.querySelector('#chart'), options);
+chart.render();
+
+// Enable animations after initial rendering.
+setTimeout(function() {
+  ApexCharts.exec('chart', 'updateOptions', {
+    chart: {
+      animations: {
+        enabled: true
+      }
+    }
+  }, false, true);
+}, 250);
+
+</script>
+
+<style>
+
+[dbg], [dbg] *, .dbg, .dbg * { outline: 1px solid red; }
+
+</style>
 
 {% endblock %}
