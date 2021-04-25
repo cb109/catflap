@@ -39,9 +39,7 @@
       <a
         href="{% url 'status' catflap_uuid=catflap.uuid %}?days={{ dayfilter.days }}"
         class="days-link {% if days == dayfilter.days %}active{% endif %}"
-      >
-        {{ dayfilter.label }}
-      </a>
+      >{{ dayfilter.label }}</a>
       {% endfor %}
     </div>
     <div id="chart" class="mx-4"></div>
