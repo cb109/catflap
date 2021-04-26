@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 import pendulum
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from server.catflap.models import CatFlap, ManualStatusUpdate
-
-APEXCHARTS_RANGEBAR_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def track_manual_intervention(catflap, cat_inside):
@@ -71,7 +70,7 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
 
 
 def get_inside_outside_statistics(catflap, num_days_ago=7):
-    now = datetime.now(timezone.utc)  # Avoid offset-naive VS offset-aware error.
+    now = timezone.localtime()
     days_ago = now - timedelta(days=num_days_ago)
 
     ranges = []
@@ -103,17 +102,17 @@ def get_inside_outside_statistics(catflap, num_days_ago=7):
 
     series = []
     for timerange in ranges:
-        range_start = timerange["start"]
-        range_end = timerange["end"]
-        seconds_taken = (range_end - range_start).total_seconds()
+        range_start = timezone.localtime(timerange["start"])
+        range_end = timezone.localtime(timerange["end"])
 
-        formatted_start = range_start.strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
-        formatted_end = range_end.strftime(APEXCHARTS_RANGEBAR_DATETIME_FORMAT)
+        formatted_start = range_start.isoformat()
+        formatted_end = range_end.isoformat()
 
         inside = timerange["inside"]
         category = "Inside" if inside else "Outside"
         fill_color = settings.COLOR_INSIDE if inside else settings.COLOR_OUTSIDE
 
+        seconds_taken = (range_end - range_start).total_seconds()
         if inside:
             seconds_inside += seconds_taken
         else:
