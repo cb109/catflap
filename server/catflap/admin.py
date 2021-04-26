@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from server.catflap.models import CatFlap, Event, ManualStatusUpdate
 
 
@@ -10,13 +12,20 @@ class CatFlapAdmin(admin.ModelAdmin):
         "created_at",
         "modified_at",
         "uuid",
+        "status_page_link",
     )
     readonly_fields = (
         "created_at",
         "modified_at",
         "uuid",
+        "status_page_link",
     )
     search_fields = ("name",)
+
+    @mark_safe
+    def status_page_link(self, catflap):
+        url = reverse("status", args=(catflap.uuid,))
+        return f"<a href='{url}' target='blank_'>Status Page</a>"
 
 
 class EventAdmin(admin.ModelAdmin):
