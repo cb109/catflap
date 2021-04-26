@@ -66,8 +66,12 @@
 </div>
 
 {{ statistics.series|json_script:"series" }}
+{{ statistics.durations|json_script:"durations" }}
 
 <script>
+
+const colorInside = '{{ color_inside }}';
+const colorOutside = '{{ color_outside }}';
 
 const rawSeries = JSON.parse(document.getElementById('series').textContent);
 const series = rawSeries.map(sample => {
@@ -75,6 +79,7 @@ const series = rawSeries.map(sample => {
   sample.y[1] = new Date(sample.y[1]).getTime();
   return sample;
 });
+const durations = JSON.parse(document.getElementById('durations').textContent);
 
 const options = {
   chart: {
@@ -109,7 +114,10 @@ const options = {
   legend: {
     position: 'top',
     horizontalAlign: 'left'
-  }
+  },
+  tooltip: {
+    custom: customTooltipFunction,
+  },
 }
 
 var chart = new ApexCharts(document.querySelector('#chart'), options);
@@ -125,6 +133,47 @@ setTimeout(function() {
     }
   }, false, true);
 }, 250);
+
+  function customTooltipFunction({ series, seriesIndex, dataPointIndex, w }) {
+    const seriesName = w.globals.seriesNames[seriesIndex];
+
+    const location = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
+    const locationColor = location === 'Outside' ? colorOutside : colorInside;
+
+    const start = w.globals.seriesRangeStart[seriesIndex][dataPointIndex];
+    const end = w.globals.seriesRangeEnd[seriesIndex][dataPointIndex];
+    const durationInWords = durations[dataPointIndex];
+
+    return (
+      `
+      <div>
+        <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+          ${getFormattedDate(start)} ${getFormattedTime(start)} - ${getFormattedTime(end)}
+        </div>
+
+        <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 2; display: flex;">
+          <span class="apexcharts-tooltip-marker" style="background-color: ${locationColor};"></span>
+          <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+            <div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-label">
+              ${location}
+              </span><span class="apexcharts-tooltip-text-value">
+                ${durationInWords}</span></div>
+            <div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div>
+          </div>
+        </div>
+
+      </div>
+      `
+    );
+  }
+
+  function getFormattedDate(timestamp) {
+    return dayjs(new Date(timestamp)).format('dd, DD.MM.YYYY');
+  }
+
+  function getFormattedTime(timestamp) {
+    return dayjs(new Date(timestamp)).format('HH:mm');
+  }
 
 </script>
 

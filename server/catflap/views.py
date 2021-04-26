@@ -70,6 +70,7 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
 
 
 def get_inside_outside_statistics(catflap, num_days_ago=7):
+    pendulum_now = pendulum.now()  # Just used to compute relative durations.
     now = timezone.localtime()
     days_ago = now - timedelta(days=num_days_ago)
 
@@ -102,6 +103,8 @@ def get_inside_outside_statistics(catflap, num_days_ago=7):
     seconds_outside = 0
 
     series = []
+    durations = []
+
     for timerange in ranges:
         range_start = timezone.localtime(timerange["start"])
         range_end = timezone.localtime(timerange["end"])
@@ -114,6 +117,13 @@ def get_inside_outside_statistics(catflap, num_days_ago=7):
         fill_color = settings.COLOR_INSIDE if inside else settings.COLOR_OUTSIDE
 
         seconds_taken = (range_end - range_start).total_seconds()
+        duration_in_words = shorten_pendulum_duration_string(
+            (
+                pendulum_now - pendulum_now.subtract(hours=seconds_taken / 60 / 60)
+            ).in_words()
+        )
+        durations.append(duration_in_words)
+
         if inside:
             seconds_inside += seconds_taken
         else:
@@ -127,7 +137,7 @@ def get_inside_outside_statistics(catflap, num_days_ago=7):
             }
         )
 
-    return series, seconds_inside, seconds_outside
+    return series, durations, seconds_inside, seconds_outside
 
 
 @require_http_methods(["GET"])
@@ -138,7 +148,7 @@ def get_catflap_status(request, catflap_uuid):
 
     catflap = CatFlap.objects.get(uuid=catflap_uuid)
 
-    series, seconds_inside, seconds_outside = get_inside_outside_statistics(
+    series, durations, seconds_inside, seconds_outside = get_inside_outside_statistics(
         catflap, num_days_ago=days
     )
     seconds_total = seconds_inside + seconds_outside
@@ -182,6 +192,7 @@ def get_catflap_status(request, catflap_uuid):
             "dayfilters": dayfilters,
             "days": days,
             "statistics": {
+                "durations": durations,
                 "ratio_inside": ratio_inside,
                 "ratio_outside": ratio_outside,
                 "series": series,
