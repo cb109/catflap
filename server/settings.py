@@ -1,22 +1,22 @@
-import os
 from pathlib import Path
+
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "o540n_s!nfi3u)!y34^pa!*p#e6b(a@fpddgif=8+pald%vcli"
+SECRET_KEY = config(
+    "SECRET_KEY", default="o540n_s!nfi3u)!y34^pa!*p#e6b(a@fpddgif=8+pald%vcli", cast=str
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=True, cast=bool)
 
-ALLOWED_HOSTS = [
-    "localhost",
-]
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost", cast=Csv())
 
 # Application definition
 
@@ -98,9 +98,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = config("LANGUAGE_CODE", default="en-us", cast=str)
 
-TIME_ZONE = "UTC"
+TIME_ZONE = config("TIME_ZONE", default="UTC", cast=str)
 
 USE_I18N = True
 
@@ -121,14 +121,22 @@ STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-PUSHOVER_USER_KEY = None
-PUSHOVER_API_TOKEN = None
+PUSHOVER_USER_KEY = config("PUSHOVER_API_TOKEN", default=None)
+PUSHOVER_API_TOKEN = config("PUSHOVER_API_TOKEN", default=None)
 
-NOTIFICATION_BASE_URL = "http://localhost:8000"
+NOTIFICATION_BASE_URL = config(
+    "NOTIFICATION_BASE_URL", default="http://localhost:8000", cast=str
+)
 
-COLOR_INSIDE = "#c7489b"
-COLOR_OUTSIDE = "#48c774"
+COLOR_INSIDE = config("COLOR_INSIDE", default="#c7489b", cast=str)
+COLOR_OUTSIDE = config("COLOR_OUTSIDE", default="#48c774", cast=str)
 
-PICTURE_URL_CAT = "https://i.imgur.com/ABrhLTn.png"
-PICTURE_URL_CAT_INSIDE = "https://i.imgur.com/iQPfFax.png"
-PICTURE_URL_CAT_OUTSIDE = "https://i.imgur.com/GE0u2vj.png"
+PICTURE_URL_CAT = config(
+    "PICTURE_URL_CAT", default="https://i.imgur.com/ABrhLTn.png", cast=str
+)
+PICTURE_URL_CAT_INSIDE = config(
+    "PICTURE_URL_CAT_INSIDE", default="https://i.imgur.com/iQPfFax.png", cast=str
+)
+PICTURE_URL_CAT_OUTSIDE = config(
+    "PICTURE_URL_CAT_OUTSIDE", default="https://i.imgur.com/GE0u2vj.png", cast=str
+)
