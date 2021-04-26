@@ -77,7 +77,8 @@ def get_inside_outside_statistics(catflap, num_days_ago=7):
     samples = get_inside_outside_samples_since(catflap, days_ago)
 
     next_cat_inside = catflap.cat_inside
-    current_range = {"start": None, "end": now, "inside": next_cat_inside}
+    end = now
+    current_range = {"start": None, "end": end, "inside": next_cat_inside}
 
     for sample in samples:
         cat_inside = sample.get("cat_inside", None)
