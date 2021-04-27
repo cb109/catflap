@@ -121,8 +121,8 @@ STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-PUSHOVER_USER_KEY = config("PUSHOVER_API_TOKEN", default=None)
-PUSHOVER_API_TOKEN = config("PUSHOVER_API_TOKEN", default=None)
+PUSHOVER_USER_KEY = config("PUSHOVER_USER_KEY", default="", cast=str)
+PUSHOVER_API_TOKEN = config("PUSHOVER_API_TOKEN", default="", cast=str)
 
 NOTIFICATION_BASE_URL = config(
     "NOTIFICATION_BASE_URL", default="http://localhost:8000", cast=str
