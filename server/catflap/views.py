@@ -123,7 +123,7 @@ def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
         formatted_end = range_end.isoformat()
 
         inside = timerange["inside"]
-        category = "Inside" if inside else "Outside"
+        category = "In" if inside else "Out"
         fill_color = settings.COLOR_INSIDE if inside else settings.COLOR_OUTSIDE
 
         seconds_taken = (range_end - range_start).total_seconds()
