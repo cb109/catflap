@@ -10,6 +10,11 @@ from django.views.decorators.http import require_http_methods
 from server.catflap.models import CatFlap, ManualStatusUpdate
 
 
+def get_now():
+    """This is meant to give a central place to define 'now' for debugging."""
+    return pendulum.now()
+
+
 def track_manual_intervention(catflap, cat_inside):
     ManualStatusUpdate.objects.create(
         catflap=catflap,
@@ -69,8 +74,8 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
     return all_values
 
 
-def get_inside_outside_statistics(catflap, num_days_ago=7):
-    pendulum_now = pendulum.now()  # Just used to compute relative durations.
+def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
+    pendulum_now = get_now()  # Just used to compute relative durations.
     now = timezone.localtime()
     days_ago = now - timedelta(days=num_days_ago)
 
@@ -154,7 +159,7 @@ def get_catflap_status(request, catflap_uuid):
     seconds_total = seconds_inside + seconds_outside
     ratio_inside = seconds_inside / (seconds_total / 100.0)
     ratio_outside = seconds_outside / (seconds_total / 100.0)
-    now = pendulum.now()
+    now = get_now()
     total_inside_in_words = shorten_pendulum_duration_string(
         (now - now.subtract(hours=seconds_inside / 60 / 60)).in_words()
     )
