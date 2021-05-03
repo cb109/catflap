@@ -106,7 +106,7 @@ def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
 
         current_range = {"start": None, "end": end, "inside": next_cat_inside}
 
-    last_range = {"start": days_ago, "end": end, "inside": not next_cat_inside}
+    last_range = {"start": days_ago, "end": end, "inside": next_cat_inside}
     ranges.insert(0, last_range)
 
     seconds_inside = 0
