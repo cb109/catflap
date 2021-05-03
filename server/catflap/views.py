@@ -192,6 +192,7 @@ def get_catflap_status(request, catflap_uuid):
         {"label": "2 hours", "days": 0.08333},
         {"label": "4 hours", "days": 0.16666},
         {"label": "8 hours", "days": 0.33333},
+        {"label": "12 hours", "days": 0.5},
         {"label": "24 hours", "days": 1},
         {"label": "2 days", "days": 2},
         {"label": "3 days", "days": 3},
