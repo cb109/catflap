@@ -10,8 +10,13 @@ from django.views.decorators.http import require_http_methods
 from server.catflap.models import CatFlap, ManualStatusUpdate
 
 
-def get_now():
-    """This is meant to give a central place to define 'now' for debugging."""
+def get_localtime_now():
+    now = timezone.now()
+    return timezone.localtime(now)
+
+
+def get_pendulum_now():
+    """Timezone does not matter here, we just use this to compute relative offsets."""
     return pendulum.now()
 
 
@@ -75,8 +80,8 @@ def get_inside_outside_samples_since(catflap: CatFlap, threshold: datetime) -> l
 
 
 def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
-    pendulum_now = get_now()  # Just used to compute relative durations.
-    now = timezone.localtime()
+    pendulum_now = get_pendulum_now()  # Just used to compute relative durations.
+    now = get_localtime_now()
     days_ago = now - timedelta(days=num_days_ago)
 
     ranges = []
@@ -159,12 +164,16 @@ def get_catflap_status(request, catflap_uuid):
     seconds_total = seconds_inside + seconds_outside
     ratio_inside = seconds_inside / (seconds_total / 100.0)
     ratio_outside = seconds_outside / (seconds_total / 100.0)
-    now = get_now()
+    pendulum_now = get_pendulum_now()
     total_inside_in_words = shorten_pendulum_duration_string(
-        (now - now.subtract(hours=seconds_inside / 60 / 60)).in_words()
+        (
+            pendulum_now - pendulum_now.subtract(hours=seconds_inside / 60 / 60)
+        ).in_words()
     )
     total_outside_in_words = shorten_pendulum_duration_string(
-        (now - now.subtract(hours=seconds_outside / 60 / 60)).in_words()
+        (
+            pendulum_now - pendulum_now.subtract(hours=seconds_outside / 60 / 60)
+        ).in_words()
     )
 
     set_inside_url = settings.NOTIFICATION_BASE_URL + reverse(
