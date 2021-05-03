@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Union
 
 import pendulum
 from django.conf import settings
@@ -152,7 +153,7 @@ def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
 
 @require_http_methods(["GET"])
 def get_catflap_status(request, catflap_uuid):
-    days = int(request.GET.get("days", "1"))
+    days = float(request.GET.get("days", "1"))
     if days > 14:
         raise ValidationError("Looking back more than 14 days back is not allowed")
 
@@ -188,6 +189,9 @@ def get_catflap_status(request, catflap_uuid):
         else settings.PICTURE_URL_CAT_OUTSIDE
     )
     dayfilters = [
+        {"label": "2h", "days": 0.08333},
+        {"label": "4h", "days": 0.16666},
+        {"label": "8h", "days": 0.33333},
         {"label": "24h", "days": 1},
         {"label": "2d", "days": 2},
         {"label": "3d", "days": 3},
