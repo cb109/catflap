@@ -2,7 +2,6 @@
   "name": "CatFlap",
   "short_name": "CatFlap",
   "display": "standalone",
-  "start_url": "/",
   "icons": [
     {
       "src": "\/static/icon-72x72.png",
