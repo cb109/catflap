@@ -35,12 +35,18 @@
       </div>
     </div>
     <div>
-      {% for dayfilter in dayfilters %}
-      <a
-        href="{% url 'status' catflap_uuid=catflap.uuid %}?days={{ dayfilter.days }}"
-        class="days-link {% if days == dayfilter.days %}active{% endif %}"
-      >{{ dayfilter.label }}</a>
-      {% endfor %}
+      <div class="select is-rounded">
+        <select onchange="location = this.value;">
+          {% for dayfilter in dayfilters %}
+          <option
+            value="{% url 'status' catflap_uuid=catflap.uuid %}?days={{ dayfilter.days }}"
+            {% if days == dayfilter.days %}selected{% endif %}
+          >
+            {{ dayfilter.label }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
     <div id="chart"></div>
     <div class="container">

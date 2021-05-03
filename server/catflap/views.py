@@ -189,14 +189,14 @@ def get_catflap_status(request, catflap_uuid):
         else settings.PICTURE_URL_CAT_OUTSIDE
     )
     dayfilters = [
-        {"label": "2h", "days": 0.08333},
-        {"label": "4h", "days": 0.16666},
-        {"label": "8h", "days": 0.33333},
-        {"label": "24h", "days": 1},
-        {"label": "2d", "days": 2},
-        {"label": "3d", "days": 3},
-        {"label": "1w", "days": 7},
-        {"label": "2w", "days": 14},
+        {"label": "2 hours", "days": 0.08333},
+        {"label": "4 hours", "days": 0.16666},
+        {"label": "8 hours", "days": 0.33333},
+        {"label": "24 hours", "days": 1},
+        {"label": "2 days", "days": 2},
+        {"label": "3 days", "days": 3},
+        {"label": "1 week", "days": 7},
+        {"label": "2 weeks", "days": 14},
     ]
     return render(
         request,
