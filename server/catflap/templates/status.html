@@ -4,12 +4,8 @@
 
 <div class="container">
   <section class="hero has-text-centered">
-    <div class="hero-body">
-      <div class="is-flex is-flex-wrap-nowrap is-justify-content-center">
-        <img src="{{ cat_picture_location_url }}" style="max-width: 50%">
-        <img src="{{ cat_picture_url }}" style="max-width: 50%">
-      </div>
-      <p class="subtitle mt-5">
+    <div class="hero-body pb-5">
+      <p class="subtitle">
         <b>{{ catflap.cat_name }}</b> is likely
       </p>
       <p
@@ -21,7 +17,11 @@
       >
         {{ catflap.cat_location }}
       </p>
-      <p class="subtitle">at the moment</p>
+      <p class="subtitle mb-2">at the moment</p>
+      <div class="mb-2 is-flex is-flex-wrap-nowrap is-justify-content-center">
+        <img src="{{ cat_picture_location_url }}" style="max-width: 100px">
+        <img src="{{ cat_picture_url }}" style="max-width: 100px">
+      </div>
       <div class="has-text-grey">
         Wrong? Set location manually:
         <span style="white-space: nowrap;">
