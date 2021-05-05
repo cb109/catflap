@@ -144,7 +144,7 @@ setTimeout(function() {
     const seriesName = w.globals.seriesNames[seriesIndex];
 
     const location = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
-    const locationColor = location === 'Outside' ? colorOutside : colorInside;
+    const locationColor = location === 'Out' ? colorOutside : colorInside;
 
     const start = w.globals.seriesRangeStart[seriesIndex][dataPointIndex];
     const end = w.globals.seriesRangeEnd[seriesIndex][dataPointIndex];
