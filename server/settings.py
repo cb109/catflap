@@ -123,6 +123,12 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 PUSHOVER_USER_KEY = config("PUSHOVER_USER_KEY", default="", cast=str)
 PUSHOVER_API_TOKEN = config("PUSHOVER_API_TOKEN", default="", cast=str)
+PUSHOVER_CUSTOM_SOUNDS_INSIDE = config(
+    "PUSHOVER_CUSTOM_SOUNDS_INSIDE", default="", cast=Csv()
+)
+PUSHOVER_CUSTOM_SOUNDS_OUTSIDE = config(
+    "PUSHOVER_CUSTOM_SOUNDS_OUTSIDE", default="", cast=Csv()
+)
 
 NOTIFICATION_BASE_URL = config(
     "NOTIFICATION_BASE_URL", default="http://localhost:8000", cast=str

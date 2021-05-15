@@ -1,3 +1,5 @@
+import random
+
 import graphene
 import pendulum
 from django.conf import settings
@@ -31,13 +33,24 @@ class EventType(DjangoObjectType):
         )
 
 
+def get_random_sound(cat_inside):
+    if (
+        not settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE
+        and settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE
+    ):
+        return None
+    if cat_inside:
+        return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE)
+    return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE)
+
+
 def notify_user(catflap, event):
     located_at = catflap.cat_location
     current_url = settings.NOTIFICATION_BASE_URL + reverse(
         f"set-{located_at}", args=(catflap.uuid,)
     )
 
-    inverse_located_at = "inside" if located_at == "outside" else "outside"
+    inverse_located_at = "inside" if not catflap.cat_inside else "outside"
     inverse_url = settings.NOTIFICATION_BASE_URL + reverse(
         f"set-{inverse_located_at}", args=(catflap.uuid,)
     )
@@ -60,7 +73,8 @@ def notify_user(catflap, event):
         f"<a href='{inverse_url}'>{inverse_located_at}</a> / "
         f"<a href='{current_url}'>{located_at}</a>"
     )
-    send_push_notification(message, title=title)
+    sound = get_random_sound(catflap.cat_inside)
+    send_push_notification(message, title=title, sound=sound)
 
 
 class EventMutation(graphene.Mutation):
