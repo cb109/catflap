@@ -15,4 +15,17 @@
   <body>
     {% block content %}{% endblock %}
   </body>
+  <script>
+    // Refresh page when returning to it after it has been opened before.
+    let lastVisibilityState = null;
+    document.addEventListener('visibilitychange', function() {
+      const state = document.visibilityState;
+      const shouldRefresh = lastVisibilityState === 'hidden' && state === 'visible';
+      lastVisibilityState = state;
+      if (shouldRefresh) {
+        console.log('[INFO] Refreshing page...');
+        window.location = window.location;
+      }
+    });
+  </script>
 </html>
