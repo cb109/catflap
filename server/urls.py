@@ -36,4 +36,9 @@ urlpatterns = [
         ),
         name="service-worker",
     ),
+    path(
+        r"manifest",
+        views.get_dynamic_manifest_json,
+        name="manifest",
+    ),
 ]

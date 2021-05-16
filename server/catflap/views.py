@@ -224,6 +224,11 @@ def get_catflap_status(request, catflap_uuid):
     )
 
 
+@require_http_methods(["GET"])
+def get_dynamic_manifest_json(request):
+    return render(request, "manifest.json")
+
+
 def shorten_pendulum_duration_string(duration_str):
     return (
         duration_str.replace(" days", "d")
