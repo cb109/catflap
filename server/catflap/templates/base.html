@@ -16,6 +16,15 @@
     {% block content %}{% endblock %}
   </body>
   <script>
+    // Register service worker to allow for A2HS button on Chrome.
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('{% static "/sw.js" %}')
+        .then(function() {
+          console.log('Service Worker Registered');
+        });
+    }
+
     // Refresh page when returning to it after it has been opened before.
     let lastVisibilityState = null;
     document.addEventListener('visibilitychange', function() {
