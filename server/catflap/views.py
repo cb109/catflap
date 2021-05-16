@@ -153,7 +153,7 @@ def get_inside_outside_statistics(catflap, num_days_ago: Union[int, float] = 7):
 
 @require_http_methods(["GET"])
 def get_catflap_status(request, catflap_uuid):
-    days = float(request.GET.get("days", "1").replace(",", "."))
+    days = float(request.GET.get("days", "0.5").replace(",", "."))
     if days > 14:
         raise ValidationError("Looking back more than 14 days back is not allowed")
 
