@@ -224,21 +224,7 @@ def get_catflap_status(request, catflap_uuid):
             "set_outside_url": set_outside_url,
         },
     )
-    response.set_cookie(COOKIE_NAME_CATFLAP_UUID, str(catflap.uuid))
     return response
-
-
-@require_http_methods(["GET"])
-def get_dynamic_manifest_json(request):
-    """Modify start_url to match currently viewed CatFlap instance."""
-
-    start_url = "/"
-
-    catflap_uuid = request.COOKIES.get(COOKIE_NAME_CATFLAP_UUID, None)
-    if catflap_uuid:
-        start_url = reverse("status", kwargs={"catflap_uuid": catflap_uuid})
-
-    return render(request, "manifest.json", {"start_url": start_url})
 
 
 def shorten_pendulum_duration_string(duration_str):

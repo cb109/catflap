@@ -1,6 +1,4 @@
 {
-  "start_url": "{{ start_url }}",
-
   "name": "CatFlap",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
