@@ -140,46 +140,46 @@ setTimeout(function() {
   }, false, true);
 }, 250);
 
-  function customTooltipFunction({ series, seriesIndex, dataPointIndex, w }) {
-    const seriesName = w.globals.seriesNames[seriesIndex];
+function customTooltipFunction({ series, seriesIndex, dataPointIndex, w }) {
+  const seriesName = w.globals.seriesNames[seriesIndex];
 
-    const location = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
-    const locationColor = location === 'Out' ? colorOutside : colorInside;
+  const location = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
+  const locationColor = location === 'Out' ? colorOutside : colorInside;
 
-    const start = w.globals.seriesRangeStart[seriesIndex][dataPointIndex];
-    const end = w.globals.seriesRangeEnd[seriesIndex][dataPointIndex];
-    const durationInWords = durations[dataPointIndex];
+  const start = w.globals.seriesRangeStart[seriesIndex][dataPointIndex];
+  const end = w.globals.seriesRangeEnd[seriesIndex][dataPointIndex];
+  const durationInWords = durations[dataPointIndex];
 
-    return (
-      `
-      <div>
-        <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
-          ${getFormattedDate(start)} ${getFormattedTime(start)} - ${getFormattedTime(end)}
-        </div>
-
-        <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 2; display: flex;">
-          <span class="apexcharts-tooltip-marker" style="background-color: ${locationColor};"></span>
-          <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
-            <div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-label">
-              ${location}
-              </span><span class="apexcharts-tooltip-text-value">
-                ${durationInWords}</span></div>
-            <div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div>
-          </div>
-        </div>
-
+  return (
+    `
+    <div>
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+        ${getFormattedDate(start)} ${getFormattedTime(start)} - ${getFormattedTime(end)}
       </div>
-      `
-    );
-  }
 
-  function getFormattedDate(timestamp) {
-    return dayjs(new Date(timestamp)).format('ddd, DD.MM.YYYY');
-  }
+      <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 2; display: flex;">
+        <span class="apexcharts-tooltip-marker" style="background-color: ${locationColor};"></span>
+        <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+          <div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-label">
+            ${location}
+            </span><span class="apexcharts-tooltip-text-value">
+              ${durationInWords}</span></div>
+          <div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div>
+        </div>
+      </div>
 
-  function getFormattedTime(timestamp) {
-    return dayjs(new Date(timestamp)).format('HH:mm');
-  }
+    </div>
+    `
+  );
+}
+
+function getFormattedDate(timestamp) {
+  return dayjs(new Date(timestamp)).format('ddd, DD.MM.YYYY');
+}
+
+function getFormattedTime(timestamp) {
+  return dayjs(new Date(timestamp)).format('HH:mm');
+}
 
 </script>
 
