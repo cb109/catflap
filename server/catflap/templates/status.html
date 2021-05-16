@@ -181,6 +181,13 @@ function getFormattedTime(timestamp) {
   return dayjs(new Date(timestamp)).format('HH:mm');
 }
 
+// Reload page when returning to it after it has been opened before.
+let lastVisibilityState = null;
+document.onvisibilitychange(function() {
+  const state = document.visibilityState;
+  alert(state);
+});
+
 </script>
 
 <style>
