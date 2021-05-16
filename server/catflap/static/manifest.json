@@ -1,5 +1,6 @@
 {
   "name": "CatFlap",
+  "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "short_name": "CatFlap",
   "display": "standalone",
