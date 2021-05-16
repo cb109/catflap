@@ -19,7 +19,7 @@
     // Register service worker to allow for A2HS button on Chrome.
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('{% static "/sw.js" %}')
+        .register('/service-worker')
         .then(function() {
           console.log('Service Worker Registered');
         });
