@@ -27,6 +27,7 @@ class EventType(DjangoObjectType):
         fields = (
             "catflap",
             "created_at",
+            "duration",
             "id",
             "kind_label",
             "kind",
@@ -80,13 +81,14 @@ class EventMutation(graphene.Mutation):
     class Arguments:
         catflap_id = graphene.Int(required=True)
         kind = graphene.String(required=True)
+        duration = graphene.Float(required=False)
 
     event = graphene.Field(EventType)
 
     @classmethod
-    def mutate(cls, root, info, catflap_id, kind):
+    def mutate(cls, root, info, catflap_id, kind, duration=None):
         catflap = CatFlap.objects.get(id=catflap_id)
-        event = Event(catflap=catflap, kind=kind)
+        event = Event(catflap=catflap, kind=kind, duration=duration)
         event.full_clean()
         event.save()
 

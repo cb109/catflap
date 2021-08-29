@@ -96,10 +96,16 @@ def connect_to_wifi(config, timeout_seconds=10):
     return wifi
 
 
-def notify_server_about_catflap_opened_closed(config):
-    query = """
+def notify_server_about_catflap_opened_closed(config, duration=None):
+    catflap_id = catflap_id = config["CATFLAP_ID"]
+    optional_duration = f"duration: {duration}" if duration is not None else ""
+    query = f"""
         mutation {{
-            createEvent(catflapId: {catflap_id}, kind: "OC") {{
+            createEvent(
+                catflapId: {catflap_id},
+                kind: "OC",
+                {optional_duration}
+            ) {{
                 event {{
                     id
                     createdAt
@@ -107,9 +113,7 @@ def notify_server_about_catflap_opened_closed(config):
                 }}
             }}
         }}
-    """.format(
-        catflap_id=config["CATFLAP_ID"]
-    )
+    """
     print("[INFO] Notifying server via API...")
     response = requests.post(config["API_URL"], json={"query": query})
     response.close()
@@ -129,6 +133,7 @@ config = get_config()
 led = get_internal_led(config["INTERNAL_LED_PIN_INDEX"])
 sensor = get_sensor(config["SENSOR_PIN_INDEX"])
 previous_sensor_state = sensor.value()
+previous_sensor_timestamp = time.tick_ms()
 
 # Connect to Wifi last, so we can blink when succeeding.
 wifi = connect_to_wifi(config)
@@ -136,6 +141,8 @@ wifi = connect_to_wifi(config)
 
 def loop_once():
     global previous_sensor_state
+    global previous_sensor_timestamp
+
     sensor_state = sensor.value()
     has_changed = sensor_state != previous_sensor_state
     if not has_changed:
@@ -143,10 +150,19 @@ def loop_once():
     else:
         is_closed = sensor_state == config["CATFLAP_CLOSED_SENSOR_STATE"]
         if is_closed:
-            notify_server_about_catflap_opened_closed(config)
+            duration = None
+            if previous_sensor_timestamp:
+                # Compute time in seconds.
+                duration = (
+                    time.tick_diff(previous_sensor_timestamp, time.tick_ms()) / 1000
+                )
+                previous_sensor_timestamp = None
+
+            notify_server_about_catflap_opened_closed(config, duration=duration)
             print("[INFO] Catflap has been closed |")
         else:
             print("[INFO] Catflap has been opened \\")
+            previous_sensor_timestamp = time.tick_ms()
 
         blink_led()
         previous_sensor_state = sensor_state

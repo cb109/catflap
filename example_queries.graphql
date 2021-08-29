@@ -13,13 +13,13 @@ query {
   }
 }
 
-
 mutation {
-  createEvent(catflapId: 1, kind: "OI") {
+  createEvent(catflapId: 1, kind: "OC", duration: 2.32) {
     event {
       id
       createdAt
       kindLabel
+      duration
     }
   }
 }
