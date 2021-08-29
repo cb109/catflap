@@ -42,6 +42,9 @@ class Event(BaseModel):
         choices=Kinds.choices,
     )
 
+    duration = models.FloatField(null=True, blank=True, default=None)
+    """Optional time in seconds that the event took."""
+
     @property
     def kind_label(self):
         return self.Kinds(self.kind).name.replace("_", " ").capitalize()

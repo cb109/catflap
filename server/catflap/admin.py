@@ -32,6 +32,7 @@ class EventAdmin(admin.ModelAdmin):
     list_display = (
         "catflap",
         "kind",
+        "duration",
         "created_at",
         "modified_at",
         "id",
