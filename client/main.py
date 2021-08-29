@@ -14,7 +14,7 @@ except ImportError:
 
 esp.sleep_type(esp.SLEEP_LIGHT)
 
-SLEEP_MS = 200
+SLEEP_MS = 50
 EVENT_OPENED_CLOSED = "OC"
 
 default_config = {
