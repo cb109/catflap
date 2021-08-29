@@ -34,14 +34,13 @@ class EventType(DjangoObjectType):
 
 
 def get_random_sound(cat_inside):
-    if (
-        not settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE
-        and settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE
-    ):
-        return None
     if cat_inside:
-        return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE)
-    return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE)
+        if settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE:
+            return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_INSIDE)
+    else:
+        if settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE:
+            return random.choice(settings.PUSHOVER_CUSTOM_SOUNDS_OUTSIDE)
+    return None
 
 
 def notify_user(catflap, event):
