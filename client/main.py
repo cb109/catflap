@@ -158,7 +158,7 @@ def loop_once():
             if previous_sensor_timestamp:
                 # Compute time in seconds.
                 duration = (
-                    time.ticks_diff(previous_sensor_timestamp, time.ticks_ms()) / 1000
+                    time.ticks_diff(time.ticks_ms(), previous_sensor_timestamp) / 1000
                 )
                 previous_sensor_timestamp = None
 
