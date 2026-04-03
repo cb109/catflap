@@ -62,6 +62,14 @@ Toggle like this:
     >>> led.on()
     >>> led.off()
 
+## Server Development
+
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- `$ cd catflap/`
+- `$ uv sync`
+- `$ uv run manage.py migrate`
+- `$ uv run manage.py runserver`
+
 ## Client Development
 
 - `$ pip install adafruit-ampy`

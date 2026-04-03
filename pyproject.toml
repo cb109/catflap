@@ -1,0 +1,16 @@
+[project]
+name = "catflap"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0.3",
+    "graphene-django>=3.2.3",
+    "gunicorn>=25.3.0",
+    "pendulum>=3.2.0",
+    "python-decouple>=3.8",
+    "whitenoise>=6.12.0",
+]
+
+# TODO: python-pushover was abandoned, switch to an alternative
